@@ -18,13 +18,22 @@ namespace TaskManagementSystem
 
         private void InitializeComponent()
         {
-            Text = "تسجيل الدخول - نظام إدارة المهام"; ClientSize = new Size(420, 300);
-            var txtUser = new TextBox { Top = 50, Left = 120, Width = 220 };
-            var txtPass = new TextBox { Top = 90, Left = 120, Width = 220, UseSystemPasswordChar = true };
-            var btnLogin = new Button { Text = "تسجيل الدخول", Top = 130, Left = 120, Width = 100 };
-            var btnCreate = new Button { Text = "إنشاء حساب جديد", Top = 170, Left = 120, Width = 220 };
-            var btnForgot = new Button { Text = "نسيت كلمة المرور", Top = 210, Left = 120, Width = 220 };
-            Controls.AddRange(new Control[] { new Label { Text = "اسم المستخدم / البريد الإلكتروني", Top = 50, Left = 20 }, new Label { Text = "كلمة المرور", Top = 90, Left = 20 }, txtUser, txtPass, btnLogin, btnCreate, btnForgot });
+            Text = "تسجيل الدخول - نظام إدارة المهام"; ClientSize = new Size(500, 340);
+            Font = new Font("Segoe UI", 10);
+            RightToLeft = RightToLeft.Yes;
+            RightToLeftLayout = true;
+
+            var txtUser = new TextBox { Top = 55, Left = 160, Width = 300 };
+            var txtPass = new TextBox { Top = 105, Left = 160, Width = 300, UseSystemPasswordChar = true };
+            var btnLogin = new Button { Text = "تسجيل الدخول", Top = 160, Left = 160, Width = 300, Height = 38 };
+            var btnCreate = new Button { Text = "إنشاء حساب جديد", Top = 208, Left = 160, Width = 300, Height = 38 };
+            var btnForgot = new Button { Text = "نسيت كلمة المرور", Top = 256, Left = 160, Width = 300, Height = 38 };
+            Controls.AddRange(new Control[]
+            {
+                new Label { Text = "اسم المستخدم / البريد الإلكتروني", Top = 58, Left = 20, Width = 130 },
+                new Label { Text = "كلمة المرور", Top = 108, Left = 20, Width = 130 },
+                txtUser, txtPass, btnLogin, btnCreate, btnForgot
+            });
 
             btnLogin.Click += (s, e) =>
             {

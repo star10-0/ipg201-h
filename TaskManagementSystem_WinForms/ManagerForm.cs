@@ -89,6 +89,10 @@ namespace TaskManagementSystem
                 BackgroundColor = Color.White,
                 BorderStyle = BorderStyle.None
             };
+            _tasksGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            _tasksGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllHeaders;
+            _tasksGrid.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            _tasksGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             tasksGroup.Controls.Add(_tasksGrid);
             leftPanel.Controls.Add(tasksGroup, 0, 1);
 
