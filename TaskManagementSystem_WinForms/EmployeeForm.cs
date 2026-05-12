@@ -97,19 +97,34 @@ namespace TaskManagementSystem
 
             Label lblStatus = new Label { Text = "الحالة الجديدة:", Top = 30, Left = 20 };
             ComboBox cmbStatus = new ComboBox { Top = 30, Left = 120, Width = 150, DropDownStyle = ComboBoxStyle.DropDownList };
-            cmbStatus.Items.AddRange(new object[] { "لم تبدأ", "قيد التنفيذ", "مكتملة" });
-            cmbStatus.SelectedIndex = (int)task.Status - 1;
+            if (task.Status == TaskStatusModel.NotStarted)
+                cmbStatus.Items.Add("قيد التنفيذ");
+            else if (task.Status == TaskStatusModel.InProgress)
+                cmbStatus.Items.Add("مكتملة");
+            else
+                cmbStatus.Items.Add(GetStatusText(task.Status));
+            cmbStatus.SelectedIndex = 0;
 
             Button btnSave = new Button { Text = "حفظ", Top = 100, Left = 80, Width = 80 };
             Button btnCancel = new Button { Text = "الغاء", Top = 100, Left = 170, Width = 80 };
 
             btnSave.Click += (s, e) =>
             {
-                var newStatus = (TaskStatusModel)(cmbStatus.SelectedIndex + 1);
-                _employeeService.UpdateTaskStatus(task.Id, newStatus);
-                MessageBox.Show("تم تحديث الحالة بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadTasks();
-                form.Close();
+                TaskStatusModel newStatus;
+                if (cmbStatus.SelectedItem!.ToString() == "قيد التنفيذ") newStatus = TaskStatusModel.InProgress;
+                else if (cmbStatus.SelectedItem!.ToString() == "مكتملة") newStatus = TaskStatusModel.Completed;
+                else newStatus = task.Status;
+
+                if (_employeeService.UpdateTaskStatus(task.Id, newStatus))
+                {
+                    MessageBox.Show("تم تحديث الحالة بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadTasks();
+                    form.Close();
+                }
+                else
+                {
+                    MessageBox.Show("لا يمكن الانتقال لهذه الحالة حسب تسلسل التنفيذ.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             };
 
             btnCancel.Click += (s, e) => form.Close();

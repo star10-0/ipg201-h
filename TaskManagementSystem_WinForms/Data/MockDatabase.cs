@@ -59,10 +59,10 @@ namespace TaskManagementSystem.Data
 
         public Employee? Login(string employeeId, string password) => _employees.FirstOrDefault(e => e.EmployeeId == employeeId && e.Password == password);
 
-        public bool CreateAccount(string name, string password, string department, string employeeId)
+        public bool CreateAccount(string name, string password, string department, string employeeId, string email)
         {
             if (_employees.Any(e => e.EmployeeId == employeeId)) return false;
-            _employees.Add(new Employee { EmployeeId = employeeId, Name = name, Password = password, Department = department, IsManager = false, Email = $"{employeeId}@company.com" });
+            _employees.Add(new Employee { EmployeeId = employeeId, Name = name, Password = password, Department = department, IsManager = false, Email = email });
             SaveEmployees();
             return true;
         }
@@ -80,6 +80,7 @@ namespace TaskManagementSystem.Data
         }
 
         public List<TaskItem> GetEmployeeTasks(string employeeId) => _tasks.Where(t => t.EmployeeId == employeeId).ToList();
+        public TaskItem? GetTaskById(int taskId) => _tasks.FirstOrDefault(t => t.Id == taskId);
 
         public bool AddTask(TaskItem task)
         {
