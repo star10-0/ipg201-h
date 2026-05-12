@@ -1,6 +1,6 @@
 using System.Text.Json;
+using TaskManagementSystem.Helpers;
 using TaskManagementSystem.Models;
-using TaskStatusModel = TaskManagementSystem.Models.TaskStatus;
 
 namespace TaskManagementSystem.Data
 {
@@ -8,175 +8,93 @@ namespace TaskManagementSystem.Data
     {
         private const string EmployeesFile = "employees.json";
         private const string TasksFile = "tasks.json";
+        private const string NotesFile = "tasknotes.json";
+        private const string DepartmentsFile = "departments.json";
+
+        private readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
         private List<Employee> _employees = new();
         private List<TaskItem> _tasks = new();
-        private bool _isInitialized = false;
+        private List<TaskNote> _notes = new();
+        private List<Department> _departments = new();
 
         public void Initialize()
         {
-            if (_isInitialized) return;
-            _employees = new List<Employee>();
-            _tasks = new List<TaskItem>();
-            LoadEmployees();
-            LoadTasks();
-            EnsureDemoTasks();
-            _isInitialized = true;
+            LoadDepartments(); LoadEmployees(); LoadTasks(); LoadNotes();
         }
 
-
-        private void EnsureDemoTasks()
+        private void LoadDepartments()
         {
-            var employeesWithoutTasks = _employees
-                .Where(e => !e.IsManager)
-                .Where(e => !_tasks.Any(t => t.EmployeeId == e.EmployeeId))
-                .ToList();
-
-            if (!employeesWithoutTasks.Any())
-            {
-                return;
-            }
-
-            foreach (var employee in employeesWithoutTasks)
-            {
-                _tasks.Add(new TaskItem
+            _departments = File.Exists(DepartmentsFile)
+                ? JsonSerializer.Deserialize<List<Department>>(File.ReadAllText(DepartmentsFile)) ?? new List<Department>()
+                : new List<Department>
                 {
-                    Id = _tasks.Count > 0 ? _tasks.Max(t => t.Id) + 1 : 1,
-                    Department = employee.Department,
-                    EmployeeId = employee.EmployeeId,
-                    EmployeeName = employee.Name,
-                    Title = $"مهمة تجريبية - {employee.Name}",
-                    Description = "بيانات وهمية للتجربة",
-                    CreatedDate = DateTime.Now.AddDays(-1),
-                    DueDate = DateTime.Now.AddDays(5),
-                    Priority = TaskPriority.Medium,
-                    Status = TaskStatusModel.NotStarted,
-                    Notes = "",
-                    LastUpdated = DateTime.Now
-                });
-            }
-
-            SaveTasks();
+                    new() { Id = 1, Name = "IT" }, new() { Id = 2, Name = "HR" }, new() { Id = 3, Name = "Sales" }, new() { Id = 4, Name = "Management" }
+                };
+            SaveDepartments();
         }
+
         private void LoadEmployees()
         {
-            if (File.Exists(EmployeesFile))
+            _employees = File.Exists(EmployeesFile)
+                ? JsonSerializer.Deserialize<List<Employee>>(File.ReadAllText(EmployeesFile)) ?? new List<Employee>()
+                : new List<Employee>();
+
+            if (_employees.Count == 0)
             {
-                string json = File.ReadAllText(EmployeesFile);
-                _employees = JsonSerializer.Deserialize<List<Employee>>(json) ?? new List<Employee>();
-            }
-            else
-            {
-                _employees.Add(new Employee { EmployeeId = "00001", Name = "احمد المدير", Password = "123456", Department = "الادارة", IsManager = true, Email = "manager@company.com" });
-                _employees.Add(new Employee { EmployeeId = "10001", Name = "محمد احمد", Password = "123456", Department = "تقنية المعلومات", IsManager = false, Email = "mohammed@company.com" });
-                _employees.Add(new Employee { EmployeeId = "10002", Name = "فاطمة علي", Password = "123456", Department = "الموارد البشرية", IsManager = false, Email = "fatima@company.com" });
-                _employees.Add(new Employee { EmployeeId = "10003", Name = "خالد سعيد", Password = "123456", Department = "المبيعات", IsManager = false, Email = "khaled@company.com" });
+                _employees.Add(new Employee { Id = 1, EmployeeNumber = "00001", EmployeeName = "Admin User", Department = "Management", Role = Roles.Admin, Email = "admin@company.com", Password = SecurityHelper.HashPassword("admin123") });
+                _employees.Add(new Employee { Id = 2, EmployeeNumber = "00002", EmployeeName = "Manager User", Department = "Management", Role = Roles.Manager, Email = "manager@company.com", Password = SecurityHelper.HashPassword("manager123") });
+                _employees.Add(new Employee { Id = 3, EmployeeNumber = "10001", EmployeeName = "Employee User", Department = "IT", Role = Roles.Employee, Email = "employee@company.com", Password = SecurityHelper.HashPassword("employee123") });
                 SaveEmployees();
             }
         }
 
-        private void LoadTasks()
-        {
-            if (File.Exists(TasksFile))
-            {
-                string json = File.ReadAllText(TasksFile);
-                _tasks = JsonSerializer.Deserialize<List<TaskItem>>(json) ?? new List<TaskItem>();
-            }
-            else
-            {
-                _tasks.Add(new TaskItem { Id = 1, Department = "تقنية المعلومات", EmployeeId = "10001", EmployeeName = "محمد احمد", Title = "تطوير نظام جديد", Description = "تطوير نظام ادارة المهام", CreatedDate = DateTime.Now.AddDays(-5), DueDate = DateTime.Now.AddDays(7), Priority = TaskPriority.High, Status = TaskStatusModel.InProgress, Notes = "", LastUpdated = DateTime.Now });
-                _tasks.Add(new TaskItem { Id = 2, Department = "الموارد البشرية", EmployeeId = "10002", EmployeeName = "فاطمة علي", Title = "تحديث السجلات", Description = "تحديث سجلات الموظفين", CreatedDate = DateTime.Now.AddDays(-3), DueDate = DateTime.Now.AddDays(2), Priority = TaskPriority.Medium, Status = TaskStatusModel.NotStarted, Notes = "", LastUpdated = DateTime.Now });
-                SaveTasks();
-            }
-        }
+        private void LoadTasks() => _tasks = File.Exists(TasksFile) ? JsonSerializer.Deserialize<List<TaskItem>>(File.ReadAllText(TasksFile)) ?? new List<TaskItem>() : new List<TaskItem>();
+        private void LoadNotes() => _notes = File.Exists(NotesFile) ? JsonSerializer.Deserialize<List<TaskNote>>(File.ReadAllText(NotesFile)) ?? new List<TaskNote>() : new List<TaskNote>();
 
-        public void SaveEmployees() { File.WriteAllText(EmployeesFile, JsonSerializer.Serialize(_employees, new JsonSerializerOptions { WriteIndented = true })); }
-        public void SaveTasks() { File.WriteAllText(TasksFile, JsonSerializer.Serialize(_tasks, new JsonSerializerOptions { WriteIndented = true })); }
+        public void SaveEmployees() => File.WriteAllText(EmployeesFile, JsonSerializer.Serialize(_employees, _jsonOptions));
+        public void SaveTasks() => File.WriteAllText(TasksFile, JsonSerializer.Serialize(_tasks, _jsonOptions));
+        public void SaveNotes() => File.WriteAllText(NotesFile, JsonSerializer.Serialize(_notes, _jsonOptions));
+        public void SaveDepartments() => File.WriteAllText(DepartmentsFile, JsonSerializer.Serialize(_departments, _jsonOptions));
 
-        public Employee? Login(string employeeId, string password)
-        {
-            var normalizedEmployeeId = employeeId.Trim();
-            return _employees.FirstOrDefault(e => e.EmployeeId.Trim() == normalizedEmployeeId && e.Password == password);
-        }
+        public Employee? Login(string usernameOrEmail, string password)
+            => _employees.FirstOrDefault(e => (e.EmployeeNumber.Equals(usernameOrEmail.Trim(), StringComparison.OrdinalIgnoreCase) || e.Email.Equals(usernameOrEmail.Trim(), StringComparison.OrdinalIgnoreCase)) && SecurityHelper.VerifyPassword(password, e.Password));
 
-        public bool CreateAccount(string name, string password, string department, string employeeId, string email)
+        public Employee? GetEmployeeByUsernameOrEmail(string usernameOrEmail)
+            => _employees.FirstOrDefault(e => e.EmployeeNumber.Equals(usernameOrEmail.Trim(), StringComparison.OrdinalIgnoreCase) || e.Email.Equals(usernameOrEmail.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        public bool CreateAccount(string name, string password, string department, string employeeNumber, string email)
         {
-            var normalizedEmployeeId = employeeId.Trim();
-            if (_employees.Any(e => e.EmployeeId.Trim() == normalizedEmployeeId)) return false;
-            _employees.Add(new Employee { EmployeeId = normalizedEmployeeId, Name = name.Trim(), Password = password, Department = department.Trim(), IsManager = false, Email = email.Trim() });
+            if (_employees.Any(e => e.EmployeeNumber.Equals(employeeNumber.Trim(), StringComparison.OrdinalIgnoreCase))) return false;
+            _employees.Add(new Employee { Id = _employees.Count > 0 ? _employees.Max(e => e.Id) + 1 : 1, EmployeeName = name.Trim(), Password = SecurityHelper.HashPassword(password), Department = department.Trim(), EmployeeNumber = employeeNumber.Trim(), Role = Roles.Employee, Email = email.Trim() });
             SaveEmployees();
             return true;
         }
 
-        public List<Employee> GetAllEmployees() => new List<Employee>(_employees);
-        public List<Employee> GetEmployeesByDepartment(string department) => _employees.Where(e => e.Department == department && !e.IsManager).ToList();
-        public List<string> GetAllDepartments() => _employees.Select(e => e.Department).Distinct().ToList();
+        public List<Department> GetAllDepartments() => _departments.OrderBy(d => d.Name).ToList();
+        public List<Employee> GetAllEmployees() => _employees.OrderBy(e => e.EmployeeName).ToList();
+        public List<Employee> GetEmployeesByDepartment(string department) => _employees.Where(e => e.Department == department).ToList();
 
         public List<TaskItem> GetTasks(string? department = null, TaskPriority? priority = null)
         {
             var query = _tasks.AsEnumerable();
-            if (!string.IsNullOrEmpty(department)) query = query.Where(t => t.Department == department);
+            if (!string.IsNullOrWhiteSpace(department)) query = query.Where(t => t.Department == department);
             if (priority.HasValue) query = query.Where(t => t.Priority == priority.Value);
-            return query.ToList();
+            return query.OrderByDescending(t => t.CreatedDate).ToList();
         }
 
-        public List<TaskItem> GetEmployeeTasks(string employeeId)
-        {
-            var normalizedEmployeeId = employeeId.Trim();
-            return _tasks.Where(t => t.EmployeeId.Trim() == normalizedEmployeeId).ToList();
-        }
+        public List<TaskItem> GetEmployeeTasks(string employeeNumber) => _tasks.Where(t => t.EmployeeNumber == employeeNumber).OrderByDescending(t => t.CreatedDate).ToList();
         public TaskItem? GetTaskById(int taskId) => _tasks.FirstOrDefault(t => t.Id == taskId);
+        public List<TaskNote> GetTaskNotes(int taskId) => _notes.Where(n => n.TaskId == taskId).OrderBy(n => n.CreatedAt).ToList();
 
         public bool AddTask(TaskItem task)
         {
             task.Id = _tasks.Count > 0 ? _tasks.Max(t => t.Id) + 1 : 1;
-            task.CreatedDate = DateTime.Now;
-            task.LastUpdated = DateTime.Now;
             _tasks.Add(task);
             SaveTasks();
             return true;
         }
-
-        public bool UpdateTaskStatus(int taskId, TaskStatusModel newStatus, string? notes = null)
-        {
-            var task = _tasks.FirstOrDefault(t => t.Id == taskId);
-            if (task == null) return false;
-            task.Status = newStatus;
-            task.LastUpdated = DateTime.Now;
-            if (!string.IsNullOrEmpty(notes)) task.Notes = notes;
-            SaveTasks();
-            return true;
-        }
-
-        public bool UpdateTaskNote(int taskId, string note)
-        {
-            var task = _tasks.FirstOrDefault(t => t.Id == taskId);
-            if (task == null) return false;
-            task.Notes = note;
-            task.LastUpdated = DateTime.Now;
-            SaveTasks();
-            return true;
-        }
-
-        public bool DeleteTask(int taskId)
-        {
-            var task = _tasks.FirstOrDefault(t => t.Id == taskId);
-            if (task == null) return false;
-            _tasks.Remove(task);
-            SaveTasks();
-            return true;
-        }
-
-        public void DeleteAllTasks(string? department = null, TaskPriority? priority = null)
-        {
-            if (string.IsNullOrEmpty(department) && !priority.HasValue) _tasks.Clear();
-            else
-            {
-                var tasksToDelete = _tasks.AsEnumerable();
-                if (!string.IsNullOrEmpty(department)) tasksToDelete = tasksToDelete.Where(t => t.Department == department);
-                if (priority.HasValue) tasksToDelete = tasksToDelete.Where(t => t.Priority == priority.Value);
-                foreach (var task in tasksToDelete.ToList()) _tasks.Remove(task);
-            }
-            SaveTasks();
-        }
+        public bool DeleteTask(int taskId) { var task = GetTaskById(taskId); if (task == null) return false; _tasks.Remove(task); _notes.RemoveAll(n => n.TaskId == taskId); SaveTasks(); SaveNotes(); return true; }
+        public bool UpdateTaskStatus(int taskId, TaskStatus status) { var task = GetTaskById(taskId); if (task == null) return false; task.Status = status; SaveTasks(); return true; }
+        public bool AddTaskNote(int taskId, string employeeNumber, string note) { _notes.Add(new TaskNote { Id = _notes.Count > 0 ? _notes.Max(n => n.Id) + 1 : 1, TaskId = taskId, EmployeeNumber = employeeNumber, NoteText = note.Trim(), CreatedAt = DateTime.Now }); SaveNotes(); return true; }
     }
 }

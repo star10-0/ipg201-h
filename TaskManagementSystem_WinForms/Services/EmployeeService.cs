@@ -1,29 +1,26 @@
 using TaskManagementSystem.Models;
-using TaskStatusModel = TaskManagementSystem.Models.TaskStatus;
 
 namespace TaskManagementSystem.Services
 {
     public class EmployeeService
     {
         private readonly Data.MockDatabase _db;
-
         public EmployeeService(Data.MockDatabase database) => _db = database;
 
-        public List<TaskItem> GetMyTasks(string employeeId) => _db.GetEmployeeTasks(employeeId);
+        public List<TaskItem> GetMyTasks(string employeeNumber) => _db.GetEmployeeTasks(employeeNumber);
+        public List<TaskNote> GetTaskNotes(int taskId) => _db.GetTaskNotes(taskId);
 
-        public bool UpdateTaskStatus(int taskId, TaskStatusModel newStatus, string? notes = null)
+        public bool UpdateTaskStatus(int taskId, TaskStatus newStatus)
         {
             var task = _db.GetTaskById(taskId);
             if (task == null) return false;
-
-            var isValidTransition = (task.Status == TaskStatusModel.NotStarted && newStatus == TaskStatusModel.InProgress)
-                                    || (task.Status == TaskStatusModel.InProgress && newStatus == TaskStatusModel.Completed)
-                                    || task.Status == newStatus;
-            if (!isValidTransition) return false;
-
-            return _db.UpdateTaskStatus(taskId, newStatus, notes);
+            var valid = (task.Status == TaskStatus.NotStarted && newStatus == TaskStatus.InProgress)
+                        || (task.Status == TaskStatus.InProgress && newStatus == TaskStatus.Completed)
+                        || task.Status == newStatus;
+            return valid && _db.UpdateTaskStatus(taskId, newStatus);
         }
 
-        public bool AddNote(int taskId, string note) => _db.UpdateTaskNote(taskId, note);
+        public bool AddNote(int taskId, string employeeNumber, string note)
+            => !string.IsNullOrWhiteSpace(note) && _db.AddTaskNote(taskId, employeeNumber, note);
     }
 }

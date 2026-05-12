@@ -6,90 +6,42 @@ namespace TaskManagementSystem
 {
     public partial class LoginForm : Form
     {
-        private readonly MockDatabase _database;
+        private readonly MockDatabase _database = new();
         private readonly AuthService _authService;
 
         public LoginForm()
         {
-            _database = new MockDatabase();
             _database.Initialize();
             _authService = new AuthService(_database);
-
             InitializeComponent();
         }
 
         private void InitializeComponent()
         {
-            this.Text = "تسجيل الدخول - نظام ادارة المهام";
-            this.ClientSize = new Size(460, 360);
-            this.RightToLeft = RightToLeft.Yes;
-            this.RightToLeftLayout = true;
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-
-            Label lblTitle = new Label { Text = "تسجيل الدخول", Top = 20, Left = 0, Width = 460, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Arial", 16, FontStyle.Bold) };
-            Label lblId = new Label { Text = "الرقم الوظيفي:", Top = 90, Left = 320, Width = 110, TextAlign = ContentAlignment.MiddleLeft };
-            Label lblPassword = new Label { Text = "كلمة السر:", Top = 145, Left = 320, Width = 110, TextAlign = ContentAlignment.MiddleLeft };
-
-            TextBox txtId = new TextBox { Name = "txtId", Top = 85, Left = 70, Width = 230 };
-            TextBox txtPassword = new TextBox { Name = "txtPassword", Top = 140, Left = 70, Width = 230, UseSystemPasswordChar = true };
-
-            Button btnLogin = new Button { Text = "تسجيل الدخول", Top = 200, Left = 165, Width = 130, Height = 36 };
-            Button btnCreate = new Button { Text = "انشاء حساب", Top = 245, Left = 165, Width = 130, Height = 36 };
-            Button btnForgotPassword = new Button { Text = "نسيت كلمة السر", Top = 290, Left = 150, Width = 160, Height = 36 };
+            Text = "Login - Task Management"; ClientSize = new Size(420, 300);
+            var txtUser = new TextBox { Top = 50, Left = 120, Width = 220 };
+            var txtPass = new TextBox { Top = 90, Left = 120, Width = 220, UseSystemPasswordChar = true };
+            var btnLogin = new Button { Text = "Login", Top = 130, Left = 120, Width = 100 };
+            var btnCreate = new Button { Text = "Create New Account", Top = 170, Left = 120, Width = 220 };
+            var btnForgot = new Button { Text = "Forgot Password", Top = 210, Left = 120, Width = 220 };
+            Controls.AddRange(new Control[] { new Label { Text = "Username / Email", Top = 50, Left = 20 }, new Label { Text = "Password", Top = 90, Left = 20 }, txtUser, txtPass, btnLogin, btnCreate, btnForgot });
 
             btnLogin.Click += (s, e) =>
             {
-                var user = _authService.Login(txtId.Text.Trim(), txtPassword.Text);
-                if (user != null)
-                {
-                    if (user.IsManager)
-                    {
-                        this.Hide();
-                        var form = new ManagerForm(user, _database);
-                        form.FormClosed += (s1, e1) => this.Close();
-                        form.Show();
-                    }
-                    else
-                    {
-                        this.Hide();
-                        var form = new EmployeeForm(user, _database);
-                        form.FormClosed += (s1, e1) => this.Close();
-                        form.Show();
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("الرقم الوظيفي او كلمة السر غير صحيحة!", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                if (string.IsNullOrWhiteSpace(txtUser.Text) || string.IsNullOrWhiteSpace(txtPass.Text)) { MessageBox.Show("Username and password are required."); return; }
+                var user = _authService.Login(txtUser.Text.Trim(), txtPass.Text);
+                if (user == null) { MessageBox.Show("Invalid credentials."); return; }
+                Hide();
+                Form frm = (user.Role == Roles.Admin || user.Role == Roles.Manager) ? new ManagerForm(user, _database) : new EmployeeForm(user, _database);
+                frm.FormClosed += (_, _) => Close(); frm.Show();
             };
-
-            btnCreate.Click += (s, e) =>
+            btnCreate.Click += (s, e) => new CreateAccountForm(_database).ShowDialog();
+            btnForgot.Click += (s, e) =>
             {
-                var form = new CreateAccountForm(_database);
-                form.ShowDialog();
+                if (string.IsNullOrWhiteSpace(txtUser.Text)) { MessageBox.Show("Enter username or email."); return; }
+                if (_authService.RequestPasswordReset(txtUser.Text.Trim(), out var error)) MessageBox.Show("Reset request sent to manager/admin.");
+                else MessageBox.Show(error);
             };
-
-            btnForgotPassword.Click += (s, e) =>
-            {
-                if (string.IsNullOrWhiteSpace(txtId.Text))
-                {
-                    MessageBox.Show("ادخل الرقم الوظيفي لإرسال طلب استعادة كلمة السر.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (_authService.RequestPasswordReset(txtId.Text.Trim(), out var managerEmail))
-                {
-                    MessageBox.Show($"تم إرسال طلب استعادة كلمة السر إلى بريد المدير: {managerEmail}", "تم الإرسال", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("الرقم الوظيفي غير موجود.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            };
-
-            this.Controls.AddRange(new Control[] { lblTitle, lblId, lblPassword, txtId, txtPassword, btnLogin, btnCreate, btnForgotPassword });
         }
     }
 }

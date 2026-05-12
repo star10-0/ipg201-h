@@ -1,20 +1,34 @@
 namespace TaskManagementSystem.Models
 {
+    public static class Roles
+    {
+        public const string Admin = "Admin";
+        public const string Manager = "Manager";
+        public const string Employee = "Employee";
+    }
+
+    public class Department
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+    }
+
     public class Employee
     {
-        public string EmployeeId { get; set; } = "";
-        public string Name { get; set; } = "";
+        public int Id { get; set; }
+        public string EmployeeNumber { get; set; } = "";
+        public string EmployeeName { get; set; } = "";
         public string Password { get; set; } = "";
         public string Department { get; set; } = "";
-        public bool IsManager { get; set; }
+        public string Role { get; set; } = Roles.Employee;
         public string Email { get; set; } = "";
     }
 
     public enum TaskPriority
     {
-        Low = 1,
+        High = 1,
         Medium = 2,
-        High = 3
+        Low = 3
     }
 
     public enum TaskStatus
@@ -22,14 +36,14 @@ namespace TaskManagementSystem.Models
         NotStarted = 1,
         InProgress = 2,
         Completed = 3,
-        Overdue = 4
+        Delayed = 4
     }
 
     public class TaskItem
     {
         public int Id { get; set; }
         public string Department { get; set; } = "";
-        public string EmployeeId { get; set; } = "";
+        public string EmployeeNumber { get; set; } = "";
         public string EmployeeName { get; set; } = "";
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
@@ -37,7 +51,14 @@ namespace TaskManagementSystem.Models
         public DateTime DueDate { get; set; }
         public TaskPriority Priority { get; set; }
         public TaskStatus Status { get; set; }
-        public string Notes { get; set; } = "";
-        public DateTime LastUpdated { get; set; }
+    }
+
+    public class TaskNote
+    {
+        public int Id { get; set; }
+        public int TaskId { get; set; }
+        public string EmployeeNumber { get; set; } = "";
+        public string NoteText { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
     }
 }

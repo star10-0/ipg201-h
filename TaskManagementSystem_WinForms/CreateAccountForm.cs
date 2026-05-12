@@ -1,5 +1,4 @@
 using TaskManagementSystem.Data;
-using TaskManagementSystem.Models;
 using TaskManagementSystem.Services;
 
 namespace TaskManagementSystem
@@ -8,68 +7,26 @@ namespace TaskManagementSystem
     {
         private readonly MockDatabase _database;
         private readonly AuthService _authService;
-
-        public CreateAccountForm(MockDatabase database)
-        {
-            _database = database;
-            _authService = new AuthService(database);
-            InitializeComponent();
-        }
+        public CreateAccountForm(MockDatabase database) { _database = database; _authService = new AuthService(database); InitializeComponent(); }
 
         private void InitializeComponent()
         {
-            this.Text = "انشاء حساب جديد";
-            this.Size = new Size(400, 430);
-            this.RightToLeft = RightToLeft.Yes;
-            this.RightToLeftLayout = true;
-            this.StartPosition = FormStartPosition.CenterScreen;
-
-            Label lblTitle = new Label { Text = "انشاء حساب جديد", Top = 10, Left = 130, AutoSize = true, Font = new Font("Arial", 12, FontStyle.Bold) };
-            Label lblName = new Label { Text = "الاسم الكامل:", Top = 50, Left = 50 };
-            Label lblPassword = new Label { Text = "كلمة السر:", Top = 90, Left = 50 };
-            Label lblDept = new Label { Text = "القسم:", Top = 130, Left = 50 };
-            Label lblId = new Label { Text = "الرقم الوظيفي:", Top = 170, Left = 50 };
-            Label lblEmail = new Label { Text = "البريد الإلكتروني:", Top = 210, Left = 50 };
-
-            TextBox txtName = new TextBox { Name = "txtName", Top = 45, Left = 150, Width = 180 };
-            TextBox txtPassword = new TextBox { Name = "txtPassword", Top = 85, Left = 150, Width = 180 };
-            ComboBox cmbDept = new ComboBox { Name = "cmbDept", Top = 125, Left = 150, Width = 180, DropDownStyle = ComboBoxStyle.DropDownList };
-            TextBox txtId = new TextBox { Name = "txtId", Top = 165, Left = 150, Width = 180 };
-            TextBox txtEmail = new TextBox { Name = "txtEmail", Top = 205, Left = 150, Width = 180 };
-
-            var depts = _database.GetAllDepartments();
-            foreach (var d in depts) cmbDept.Items.Add(d);
-            if (cmbDept.Items.Count > 0) cmbDept.SelectedIndex = 0;
-
-            Button btnCreate = new Button { Text = "انشاء", Top = 260, Left = 150, Width = 80 };
-            Button btnCancel = new Button { Text = "الغاء", Top = 260, Left = 240, Width = 80 };
-
-            btnCreate.Click += (s, e) =>
+            Text = "Register"; Size = new Size(420, 340);
+            var txtName = new TextBox { Top = 30, Left = 160, Width = 220 };
+            var txtPass = new TextBox { Top = 70, Left = 160, Width = 220, UseSystemPasswordChar = true };
+            var cmbDept = new ComboBox { Top = 110, Left = 160, Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
+            var txtNo = new TextBox { Top = 150, Left = 160, Width = 220 };
+            var txtEmail = new TextBox { Top = 190, Left = 160, Width = 220 };
+            foreach (var d in _database.GetAllDepartments()) cmbDept.Items.Add(d.Name); if (cmbDept.Items.Count > 0) cmbDept.SelectedIndex = 0;
+            var btn = new Button { Text = "Create", Top = 240, Left = 160, Width = 100 };
+            Controls.AddRange(new Control[] { new Label { Text = "Employee Name", Top = 30, Left = 20 }, txtName, new Label { Text = "Password", Top = 70, Left = 20 }, txtPass, new Label { Text = "Department", Top = 110, Left = 20 }, cmbDept, new Label { Text = "Employee Number", Top = 150, Left = 20 }, txtNo, new Label { Text = "Email", Top = 190, Left = 20 }, txtEmail, btn });
+            btn.Click += (s, e) =>
             {
-                if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtPassword.Text) || string.IsNullOrWhiteSpace(txtId.Text) || string.IsNullOrWhiteSpace(txtEmail.Text))
-                {
-                    MessageBox.Show("الرجاء ملء جميع الحقول!", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                if (cmbDept.SelectedItem == null)
-                {
-                    MessageBox.Show("الرجاء اختيار القسم!", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                if (_authService.CreateAccount(txtName.Text.Trim(), txtPassword.Text, cmbDept.SelectedItem.ToString()!, txtId.Text.Trim(), txtEmail.Text.Trim()))
-                {
-                    MessageBox.Show("تم انشاء الحساب بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.Close();
-                }
-                else
-                {
-                    MessageBox.Show("الرقم الوظيفي موجود مسبقاً!", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtPass.Text) || cmbDept.SelectedItem == null || string.IsNullOrWhiteSpace(txtNo.Text)) { MessageBox.Show("All required fields must be filled."); return; }
+                var ok = _authService.CreateAccount(txtName.Text, txtPass.Text, cmbDept.SelectedItem.ToString()!, txtNo.Text, txtEmail.Text);
+                MessageBox.Show(ok ? "Account created successfully." : "Duplicate employee number or save failure.");
+                if (ok) Close();
             };
-
-            btnCancel.Click += (s, e) => this.Close();
-
-            this.Controls.AddRange(new Control[] { lblTitle, lblName, lblPassword, lblDept, lblId, lblEmail, txtName, txtPassword, cmbDept, txtId, txtEmail, btnCreate, btnCancel });
         }
     }
 }
