@@ -1,4 +1,5 @@
 using TaskManagementSystem.Models;
+using TaskStatusModel = TaskManagementSystem.Models.TaskStatus;
 
 namespace TaskManagementSystem.Services
 {
@@ -12,7 +13,7 @@ namespace TaskManagementSystem.Services
 
         public List<TaskNote> GetTaskNotes(int taskId) => _db.GetTaskNotes(taskId);
 
-        public bool UpdateTaskStatus(int taskId, string employeeNumber, TaskStatus newStatus, out string errorMessage)
+        public bool UpdateTaskStatus(int taskId, string employeeNumber, TaskStatusModel newStatus, out string errorMessage)
         {
             errorMessage = string.Empty;
             var task = _db.GetTaskById(taskId);
@@ -28,8 +29,8 @@ namespace TaskManagementSystem.Services
                 return false;
             }
 
-            var valid = (task.Status == TaskStatus.NotStarted && newStatus == TaskStatus.InProgress)
-                        || (task.Status == TaskStatus.InProgress && newStatus == TaskStatus.Completed)
+            var valid = (task.Status == TaskStatusModel.NotStarted && newStatus == TaskStatusModel.InProgress)
+                        || (task.Status == TaskStatusModel.InProgress && newStatus == TaskStatusModel.Completed)
                         || task.Status == newStatus;
 
             if (!valid)
