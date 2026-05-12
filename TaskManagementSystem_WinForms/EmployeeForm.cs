@@ -42,16 +42,55 @@ namespace TaskManagementSystem
 
             _employeeInfoLabel = new Label { Top = 10, Left = 10, Width = 1150, Height = 30 };
 
-            var buttonWidth = 145;
-            var btnStatus = new Button { Name = "btnUpdateStatus", Text = "تحديث الحالة", Top = 45, Left = 10, Width = buttonWidth };
-            var btnNote = new Button { Name = "btnAddNote", Text = "إضافة ملاحظة", Top = 45, Left = 165, Width = buttonWidth };
-            var btnRefresh = new Button { Name = "btnRefreshTasks", Text = "تحديث المهام", Top = 45, Left = 320, Width = buttonWidth };
+            var buttonWidth = 165;
+            var buttonHeight = 38;
+            var btnStatus = new Button
+            {
+                Name = "btnUpdateStatus",
+                Text = "تحديث الحالة",
+                Top = 45,
+                Left = 10,
+                Width = buttonWidth,
+                Height = buttonHeight,
+                BackColor = Color.FromArgb(13, 110, 253),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat
+            };
+            btnStatus.FlatAppearance.BorderSize = 0;
+
+            var btnNote = new Button
+            {
+                Name = "btnAddNote",
+                Text = "إضافة ملاحظة",
+                Top = 45,
+                Left = 185,
+                Width = buttonWidth,
+                Height = buttonHeight,
+                BackColor = Color.FromArgb(25, 135, 84),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat
+            };
+            btnNote.FlatAppearance.BorderSize = 0;
+
+            var btnRefresh = new Button
+            {
+                Name = "btnRefreshTasks",
+                Text = "تحديث المهام",
+                Top = 45,
+                Left = 360,
+                Width = buttonWidth,
+                Height = buttonHeight,
+                BackColor = Color.FromArgb(108, 117, 125),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat
+            };
+            btnRefresh.FlatAppearance.BorderSize = 0;
 
             _statusCombo = new ComboBox
             {
                 Name = "cmbStatus",
-                Top = 45,
-                Left = 480,
+                Top = 47,
+                Left = 535,
                 Width = 160,
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
@@ -61,8 +100,8 @@ namespace TaskManagementSystem
             var noteLabel = new Label
             {
                 Text = "الملاحظة",
-                Top = 45,
-                Left = 1090,
+                Top = 47,
+                Left = 1100,
                 Width = 70,
                 Height = 24,
                 TextAlign = ContentAlignment.MiddleRight
@@ -71,9 +110,9 @@ namespace TaskManagementSystem
             _noteTextBox = new TextBox
             {
                 Name = "txtNote",
-                Top = 72,
-                Left = 650,
-                Width = 480,
+                Top = 45,
+                Left = 700,
+                Width = 390,
                 Height = 65,
                 Multiline = true,
                 ScrollBars = ScrollBars.Vertical
