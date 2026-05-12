@@ -18,9 +18,9 @@ namespace TaskManagementSystem.Services
         {
             error = string.Empty;
             var employee = _db.GetEmployeeByUsernameOrEmail(usernameOrEmail);
-            if (employee == null) { error = "User not found."; return false; }
+            if (employee == null) { error = "المستخدم غير موجود."; return false; }
             var manager = _db.GetAllEmployees().FirstOrDefault(e => e.Role == Roles.Manager || e.Role == Roles.Admin);
-            if (manager == null || string.IsNullOrWhiteSpace(manager.Email)) { error = "Manager/Admin email not configured."; return false; }
+            if (manager == null || string.IsNullOrWhiteSpace(manager.Email)) { error = "بريد المسؤول غير مهيأ."; return false; }
 
             try
             {
@@ -29,13 +29,13 @@ namespace TaskManagementSystem.Services
                     EnableSsl = true,
                     Credentials = new NetworkCredential("no-reply@company.com", "smtp-password")
                 };
-                var body = $"Password reset assistance required.\nEmployee Name: {employee.EmployeeName}\nEmployee ID: {employee.EmployeeNumber}\nDepartment: {employee.Department}\nRequest Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
-                client.Send(new MailMessage("no-reply@company.com", manager.Email, "Password Reset Assistance", body));
+                var body = $"طلب مساعدة لإعادة تعيين كلمة المرور.\nاسم الموظف: {employee.EmployeeName}\nرقم الموظف: {employee.EmployeeNumber}\nالقسم: {employee.Department}\nوقت الطلب: {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+                client.Send(new MailMessage("no-reply@company.com", manager.Email, "طلب إعادة تعيين كلمة المرور", body));
                 return true;
             }
             catch (Exception ex)
             {
-                error = $"Email sending failed: {ex.Message}";
+                error = $"فشل إرسال البريد الإلكتروني: {ex.Message}";
                 return false;
             }
         }
