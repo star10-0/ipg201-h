@@ -56,7 +56,7 @@ namespace TaskManagementSystem
                     MessageBox.Show("الرجاء اختيار القسم!", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                if (_authService.CreateAccount(txtName.Text, txtPassword.Text, cmbDept.SelectedItem.ToString()!, txtId.Text, txtEmail.Text))
+                if (_authService.CreateAccount(txtName.Text.Trim(), txtPassword.Text, cmbDept.SelectedItem.ToString()!, txtId.Text.Trim(), txtEmail.Text.Trim()))
                 {
                     MessageBox.Show("تم انشاء الحساب بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     this.Close();

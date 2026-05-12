@@ -41,7 +41,7 @@ namespace TaskManagementSystem
 
             btnLogin.Click += (s, e) =>
             {
-                var user = _authService.Login(txtId.Text, txtPassword.Text);
+                var user = _authService.Login(txtId.Text.Trim(), txtPassword.Text);
                 if (user != null)
                 {
                     if (user.IsManager)
@@ -79,7 +79,7 @@ namespace TaskManagementSystem
                     return;
                 }
 
-                if (_authService.RequestPasswordReset(txtId.Text, out var managerEmail))
+                if (_authService.RequestPasswordReset(txtId.Text.Trim(), out var managerEmail))
                 {
                     MessageBox.Show($"تم إرسال طلب استعادة كلمة السر إلى بريد المدير: {managerEmail}", "تم الإرسال", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
