@@ -38,6 +38,7 @@ namespace TaskManagementSystem
             Size = new Size(1200, 700);
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
+            Font = new Font("Segoe UI", 10);
 
             _employeeInfoLabel = new Label { Top = 10, Left = 10, Width = 1150, Height = 30 };
 
@@ -57,13 +58,23 @@ namespace TaskManagementSystem
             _statusCombo.Items.AddRange(new[] { "لم تبدأ", "قيد التنفيذ", "مكتملة" });
             _statusCombo.SelectedIndex = 0;
 
+            var noteLabel = new Label
+            {
+                Text = "الملاحظة",
+                Top = 45,
+                Left = 1090,
+                Width = 70,
+                Height = 24,
+                TextAlign = ContentAlignment.MiddleRight
+            };
+
             _noteTextBox = new TextBox
             {
                 Name = "txtNote",
-                Top = 45,
+                Top = 72,
                 Left = 650,
                 Width = 480,
-                Height = 60,
+                Height = 65,
                 Multiline = true,
                 ScrollBars = ScrollBars.Vertical
             };
@@ -71,10 +82,10 @@ namespace TaskManagementSystem
             _grid = new DataGridView
             {
                 Name = "gridTasks",
-                Top = 80,
+                Top = 150,
                 Left = 10,
                 Width = 1150,
-                Height = 570,
+                Height = 500,
                 ReadOnly = true,
                 AutoGenerateColumns = true,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
@@ -82,7 +93,7 @@ namespace TaskManagementSystem
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
             };
 
-            Controls.AddRange(new Control[] { _employeeInfoLabel, btnStatus, btnNote, btnRefresh, _statusCombo, _noteTextBox, _grid });
+            Controls.AddRange(new Control[] { _employeeInfoLabel, btnStatus, btnNote, btnRefresh, _statusCombo, noteLabel, _noteTextBox, _grid });
 
             btnStatus.Click += BtnStatus_Click;
             btnNote.Click += BtnNote_Click;
