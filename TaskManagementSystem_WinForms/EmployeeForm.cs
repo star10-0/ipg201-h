@@ -36,18 +36,21 @@ namespace TaskManagementSystem
         {
             Text = "لوحة الموظف";
             Size = new Size(1200, 700);
+            RightToLeft = RightToLeft.Yes;
+            RightToLeftLayout = true;
 
             _employeeInfoLabel = new Label { Top = 10, Left = 10, Width = 1150, Height = 30 };
 
-            var btnStatus = new Button { Name = "btnUpdateStatus", Text = "تحديث الحالة", Top = 45, Left = 10, Width = 120 };
-            var btnNote = new Button { Name = "btnAddNote", Text = "إضافة ملاحظة", Top = 45, Left = 140, Width = 120 };
-            var btnRefresh = new Button { Name = "btnRefreshTasks", Text = "تحديث المهام", Top = 45, Left = 270, Width = 120 };
+            var buttonWidth = 145;
+            var btnStatus = new Button { Name = "btnUpdateStatus", Text = "تحديث الحالة", Top = 45, Left = 10, Width = buttonWidth };
+            var btnNote = new Button { Name = "btnAddNote", Text = "إضافة ملاحظة", Top = 45, Left = 165, Width = buttonWidth };
+            var btnRefresh = new Button { Name = "btnRefreshTasks", Text = "تحديث المهام", Top = 45, Left = 320, Width = buttonWidth };
 
             _statusCombo = new ComboBox
             {
                 Name = "cmbStatus",
                 Top = 45,
-                Left = 420,
+                Left = 480,
                 Width = 160,
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
@@ -58,7 +61,7 @@ namespace TaskManagementSystem
             {
                 Name = "txtNote",
                 Top = 45,
-                Left = 600,
+                Left = 650,
                 Width = 480,
                 Height = 60,
                 Multiline = true,
