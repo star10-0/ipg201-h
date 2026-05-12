@@ -21,23 +21,23 @@ namespace TaskManagementSystem
         private void InitializeComponent()
         {
             this.Text = "تسجيل الدخول - نظام ادارة المهام";
-            this.Size = new Size(400, 300);
+            this.ClientSize = new Size(460, 360);
             this.RightToLeft = RightToLeft.Yes;
             this.RightToLeftLayout = true;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
 
-            Label lblTitle = new Label { Text = "تسجيل الدخول", Top = 20, Left = 130, AutoSize = true, Font = new Font("Arial", 14, FontStyle.Bold) };
-            Label lblId = new Label { Text = "الرقم الوظيفي:", Top = 70, Left = 50 };
-            Label lblPassword = new Label { Text = "كلمة السر:", Top = 120, Left = 50 };
+            Label lblTitle = new Label { Text = "تسجيل الدخول", Top = 20, Left = 0, Width = 460, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Arial", 16, FontStyle.Bold) };
+            Label lblId = new Label { Text = "الرقم الوظيفي:", Top = 90, Left = 320, Width = 110, TextAlign = ContentAlignment.MiddleLeft };
+            Label lblPassword = new Label { Text = "كلمة السر:", Top = 145, Left = 320, Width = 110, TextAlign = ContentAlignment.MiddleLeft };
 
-            TextBox txtId = new TextBox { Name = "txtId", Top = 65, Left = 150, Width = 180 };
-            TextBox txtPassword = new TextBox { Name = "txtPassword", Top = 115, Left = 150, Width = 180, UseSystemPasswordChar = true };
+            TextBox txtId = new TextBox { Name = "txtId", Top = 85, Left = 70, Width = 230 };
+            TextBox txtPassword = new TextBox { Name = "txtPassword", Top = 140, Left = 70, Width = 230, UseSystemPasswordChar = true };
 
-            Button btnLogin = new Button { Text = "تسجيل الدخول", Top = 170, Left = 140, Width = 100 };
-            Button btnCreate = new Button { Text = "انشاء حساب", Top = 210, Left = 140, Width = 100 };
-            Button btnForgotPassword = new Button { Text = "نسيت كلمة السر", Top = 245, Left = 125, Width = 130 };
+            Button btnLogin = new Button { Text = "تسجيل الدخول", Top = 200, Left = 165, Width = 130, Height = 36 };
+            Button btnCreate = new Button { Text = "انشاء حساب", Top = 245, Left = 165, Width = 130, Height = 36 };
+            Button btnForgotPassword = new Button { Text = "نسيت كلمة السر", Top = 290, Left = 150, Width = 160, Height = 36 };
 
             btnLogin.Click += (s, e) =>
             {

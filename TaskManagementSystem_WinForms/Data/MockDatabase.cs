@@ -19,9 +19,44 @@ namespace TaskManagementSystem.Data
             _tasks = new List<TaskItem>();
             LoadEmployees();
             LoadTasks();
+            EnsureDemoTasks();
             _isInitialized = true;
         }
 
+
+        private void EnsureDemoTasks()
+        {
+            var employeesWithoutTasks = _employees
+                .Where(e => !e.IsManager)
+                .Where(e => !_tasks.Any(t => t.EmployeeId == e.EmployeeId))
+                .ToList();
+
+            if (!employeesWithoutTasks.Any())
+            {
+                return;
+            }
+
+            foreach (var employee in employeesWithoutTasks)
+            {
+                _tasks.Add(new TaskItem
+                {
+                    Id = _tasks.Count > 0 ? _tasks.Max(t => t.Id) + 1 : 1,
+                    Department = employee.Department,
+                    EmployeeId = employee.EmployeeId,
+                    EmployeeName = employee.Name,
+                    Title = $"مهمة تجريبية - {employee.Name}",
+                    Description = "بيانات وهمية للتجربة",
+                    CreatedDate = DateTime.Now.AddDays(-1),
+                    DueDate = DateTime.Now.AddDays(5),
+                    Priority = TaskPriority.Medium,
+                    Status = TaskStatusModel.NotStarted,
+                    Notes = "",
+                    LastUpdated = DateTime.Now
+                });
+            }
+
+            SaveTasks();
+        }
         private void LoadEmployees()
         {
             if (File.Exists(EmployeesFile))
