@@ -1,6 +1,7 @@
 using TaskManagementSystem.Data;
 using TaskManagementSystem.Models;
 using TaskManagementSystem.Services;
+using TaskStatusModel = TaskManagementSystem.Models.TaskStatus;
 
 namespace TaskManagementSystem
 {
@@ -56,7 +57,7 @@ namespace TaskManagementSystem
             var btn = new Button { Text = "Save", Top = 340, Left = 170 }; btn.Click += (_, _) => {
                 if (cmbDept.SelectedItem == null || cmbEmp.SelectedIndex < 0 || string.IsNullOrWhiteSpace(txtTitle.Text) || string.IsNullOrWhiteSpace(txtDesc.Text)) { MessageBox.Show("All fields are required."); return; }
                 var emp = _service.GetEmployeesByDepartment(cmbDept.SelectedItem.ToString()!).Where(e => e.Role == Roles.Employee).ElementAt(cmbEmp.SelectedIndex);
-                var task = new TaskItem { Department = cmbDept.SelectedItem.ToString()!, EmployeeName = emp.EmployeeName, EmployeeNumber = emp.EmployeeNumber, Title = txtTitle.Text.Trim(), Description = txtDesc.Text.Trim(), CreatedDate = dtCreate.Value, DueDate = dtDue.Value, Priority = Enum.Parse<TaskPriority>(cmbPriority.SelectedItem!.ToString()!), Status = Enum.Parse<TaskStatus>(cmbStatus.SelectedItem!.ToString()!) };
+                var task = new TaskItem { Department = cmbDept.SelectedItem.ToString()!, EmployeeName = emp.EmployeeName, EmployeeNumber = emp.EmployeeNumber, Title = txtTitle.Text.Trim(), Description = txtDesc.Text.Trim(), CreatedDate = dtCreate.Value, DueDate = dtDue.Value, Priority = Enum.Parse<TaskPriority>(cmbPriority.SelectedItem!.ToString()!), Status = Enum.Parse<TaskStatusModel>(cmbStatus.SelectedItem!.ToString()!) };
                 if (!_service.AddTask(task)) { MessageBox.Show("Employee must belong to selected department."); return; }
                 LoadData(); dlg.Close();
             };
