@@ -7,20 +7,64 @@ namespace TaskManagementSystem.Services
         private readonly Data.MockDatabase _db;
         public EmployeeService(Data.MockDatabase database) => _db = database;
 
-        public List<TaskItem> GetMyTasks(string employeeNumber) => _db.GetEmployeeTasks(employeeNumber);
+        public List<TaskItem> GetMyTasks(string employeeNumber, int employeeId)
+            => _db.GetEmployeeTasks(employeeNumber, employeeId);
+
         public List<TaskNote> GetTaskNotes(int taskId) => _db.GetTaskNotes(taskId);
 
-        public bool UpdateTaskStatus(int taskId, TaskManagementSystem.Models.TaskStatus newStatus)
+        public bool UpdateTaskStatus(int taskId, string employeeNumber, TaskStatus newStatus, out string errorMessage)
         {
+            errorMessage = string.Empty;
             var task = _db.GetTaskById(taskId);
-            if (task == null) return false;
-            var valid = (task.Status == TaskManagementSystem.Models.TaskStatus.NotStarted && newStatus == TaskManagementSystem.Models.TaskStatus.InProgress)
-                        || (task.Status == TaskManagementSystem.Models.TaskStatus.InProgress && newStatus == TaskManagementSystem.Models.TaskStatus.Completed)
+            if (task == null)
+            {
+                errorMessage = "المهمة غير موجودة.";
+                return false;
+            }
+
+            if (!string.Equals(task.EmployeeNumber, employeeNumber, StringComparison.OrdinalIgnoreCase))
+            {
+                errorMessage = "لا يمكنك تعديل مهمة لا تخصك.";
+                return false;
+            }
+
+            var valid = (task.Status == TaskStatus.NotStarted && newStatus == TaskStatus.InProgress)
+                        || (task.Status == TaskStatus.InProgress && newStatus == TaskStatus.Completed)
                         || task.Status == newStatus;
-            return valid && _db.UpdateTaskStatus(taskId, newStatus);
+
+            if (!valid)
+            {
+                errorMessage = "انتقال الحالة غير مسموح.";
+                return false;
+            }
+
+            return _db.UpdateTaskStatus(taskId, newStatus);
         }
 
-        public bool AddNote(int taskId, string employeeNumber, string note)
-            => !string.IsNullOrWhiteSpace(note) && _db.AddTaskNote(taskId, employeeNumber, note);
+        public bool AddNote(int taskId, int employeeId, string employeeNumber, string note, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(note))
+            {
+                errorMessage = "لا يمكن إضافة ملاحظة فارغة.";
+                return false;
+            }
+
+            var task = _db.GetTaskById(taskId);
+            if (task == null)
+            {
+                errorMessage = "المهمة غير موجودة.";
+                return false;
+            }
+
+            if (!string.Equals(task.EmployeeNumber, employeeNumber, StringComparison.OrdinalIgnoreCase))
+            {
+                errorMessage = "لا يمكنك إضافة ملاحظة على مهمة لا تخصك.";
+                return false;
+            }
+
+            return _db.AddTaskNote(taskId, employeeId, employeeNumber, note);
+        }
     }
 }
