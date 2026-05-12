@@ -19,7 +19,7 @@ namespace TaskManagementSystem
         private void InitializeComponent()
         {
             this.Text = "انشاء حساب جديد";
-            this.Size = new Size(400, 400);
+            this.Size = new Size(400, 430);
             this.RightToLeft = RightToLeft.Yes;
             this.RightToLeftLayout = true;
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -29,22 +29,24 @@ namespace TaskManagementSystem
             Label lblPassword = new Label { Text = "كلمة السر:", Top = 90, Left = 50 };
             Label lblDept = new Label { Text = "القسم:", Top = 130, Left = 50 };
             Label lblId = new Label { Text = "الرقم الوظيفي:", Top = 170, Left = 50 };
+            Label lblEmail = new Label { Text = "البريد الإلكتروني:", Top = 210, Left = 50 };
 
             TextBox txtName = new TextBox { Name = "txtName", Top = 45, Left = 150, Width = 180 };
             TextBox txtPassword = new TextBox { Name = "txtPassword", Top = 85, Left = 150, Width = 180 };
             ComboBox cmbDept = new ComboBox { Name = "cmbDept", Top = 125, Left = 150, Width = 180, DropDownStyle = ComboBoxStyle.DropDownList };
             TextBox txtId = new TextBox { Name = "txtId", Top = 165, Left = 150, Width = 180 };
+            TextBox txtEmail = new TextBox { Name = "txtEmail", Top = 205, Left = 150, Width = 180 };
 
             var depts = _database.GetAllDepartments();
             foreach (var d in depts) cmbDept.Items.Add(d);
             if (cmbDept.Items.Count > 0) cmbDept.SelectedIndex = 0;
 
-            Button btnCreate = new Button { Text = "انشاء", Top = 220, Left = 150, Width = 80 };
-            Button btnCancel = new Button { Text = "الغاء", Top = 220, Left = 240, Width = 80 };
+            Button btnCreate = new Button { Text = "انشاء", Top = 260, Left = 150, Width = 80 };
+            Button btnCancel = new Button { Text = "الغاء", Top = 260, Left = 240, Width = 80 };
 
             btnCreate.Click += (s, e) =>
             {
-                if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtPassword.Text) || string.IsNullOrWhiteSpace(txtId.Text))
+                if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtPassword.Text) || string.IsNullOrWhiteSpace(txtId.Text) || string.IsNullOrWhiteSpace(txtEmail.Text))
                 {
                     MessageBox.Show("الرجاء ملء جميع الحقول!", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -54,7 +56,7 @@ namespace TaskManagementSystem
                     MessageBox.Show("الرجاء اختيار القسم!", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                if (_authService.CreateAccount(txtName.Text, txtPassword.Text, cmbDept.SelectedItem.ToString()!, txtId.Text))
+                if (_authService.CreateAccount(txtName.Text, txtPassword.Text, cmbDept.SelectedItem.ToString()!, txtId.Text, txtEmail.Text))
                 {
                     MessageBox.Show("تم انشاء الحساب بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     this.Close();
@@ -67,7 +69,7 @@ namespace TaskManagementSystem
 
             btnCancel.Click += (s, e) => this.Close();
 
-            this.Controls.AddRange(new Control[] { lblTitle, lblName, lblPassword, lblDept, lblId, txtName, txtPassword, cmbDept, txtId, btnCreate, btnCancel });
+            this.Controls.AddRange(new Control[] { lblTitle, lblName, lblPassword, lblDept, lblId, lblEmail, txtName, txtPassword, cmbDept, txtId, txtEmail, btnCreate, btnCancel });
         }
     }
 }

@@ -37,6 +37,7 @@ namespace TaskManagementSystem
 
             Button btnLogin = new Button { Text = "تسجيل الدخول", Top = 170, Left = 140, Width = 100 };
             Button btnCreate = new Button { Text = "انشاء حساب", Top = 210, Left = 140, Width = 100 };
+            Button btnForgotPassword = new Button { Text = "نسيت كلمة السر", Top = 245, Left = 125, Width = 130 };
 
             btnLogin.Click += (s, e) =>
             {
@@ -70,7 +71,25 @@ namespace TaskManagementSystem
                 form.ShowDialog();
             };
 
-            this.Controls.AddRange(new Control[] { lblTitle, lblId, lblPassword, txtId, txtPassword, btnLogin, btnCreate });
+            btnForgotPassword.Click += (s, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(txtId.Text))
+                {
+                    MessageBox.Show("ادخل الرقم الوظيفي لإرسال طلب استعادة كلمة السر.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (_authService.RequestPasswordReset(txtId.Text, out var managerEmail))
+                {
+                    MessageBox.Show($"تم إرسال طلب استعادة كلمة السر إلى بريد المدير: {managerEmail}", "تم الإرسال", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("الرقم الوظيفي غير موجود.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            };
+
+            this.Controls.AddRange(new Control[] { lblTitle, lblId, lblPassword, txtId, txtPassword, btnLogin, btnCreate, btnForgotPassword });
         }
     }
 }
