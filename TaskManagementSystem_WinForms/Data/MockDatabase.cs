@@ -82,7 +82,8 @@ namespace TaskManagementSystem.Data
             return query.OrderByDescending(t => t.CreatedDate).ToList();
         }
 
-        public List<TaskItem> GetEmployeeTasks(string employeeNumber) => _tasks.Where(t => t.EmployeeNumber == employeeNumber).OrderByDescending(t => t.CreatedDate).ToList();
+        public List<TaskItem> GetEmployeeTasks(string employeeNumber, int employeeId)
+            => _tasks.Where(t => t.EmployeeNumber == employeeNumber).OrderByDescending(t => t.CreatedDate).ToList();
         public TaskItem? GetTaskById(int taskId) => _tasks.FirstOrDefault(t => t.Id == taskId);
         public List<TaskNote> GetTaskNotes(int taskId) => _notes.Where(n => n.TaskId == taskId).OrderBy(n => n.CreatedAt).ToList();
 
@@ -95,6 +96,19 @@ namespace TaskManagementSystem.Data
         }
         public bool DeleteTask(int taskId) { var task = GetTaskById(taskId); if (task == null) return false; _tasks.Remove(task); _notes.RemoveAll(n => n.TaskId == taskId); SaveTasks(); SaveNotes(); return true; }
         public bool UpdateTaskStatus(int taskId, TaskManagementSystem.Models.TaskStatus status) { var task = GetTaskById(taskId); if (task == null) return false; task.Status = status; SaveTasks(); return true; }
-        public bool AddTaskNote(int taskId, string employeeNumber, string note) { _notes.Add(new TaskNote { Id = _notes.Count > 0 ? _notes.Max(n => n.Id) + 1 : 1, TaskId = taskId, EmployeeNumber = employeeNumber, NoteText = note.Trim(), CreatedAt = DateTime.Now }); SaveNotes(); return true; }
+        public bool AddTaskNote(int taskId, int employeeId, string employeeNumber, string note)
+        {
+            _notes.Add(new TaskNote
+            {
+                Id = _notes.Count > 0 ? _notes.Max(n => n.Id) + 1 : 1,
+                TaskId = taskId,
+                EmployeeId = employeeId,
+                EmployeeNumber = employeeNumber,
+                NoteText = note.Trim(),
+                CreatedAt = DateTime.Now
+            });
+            SaveNotes();
+            return true;
+        }
     }
 }
