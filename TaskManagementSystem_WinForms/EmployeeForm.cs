@@ -59,7 +59,14 @@ namespace TaskManagementSystem
             lvTasks.Columns.Add("تاريخ التسليم", 100);
             lvTasks.Columns.Add("ملاحظة", 150);
 
-            btnViewTasks.Click += (s, e) => LoadTasks();
+            btnViewTasks.Click += (s, e) =>
+            {
+                LoadTasks();
+                if (lvTasks.Items.Count == 0)
+                {
+                    MessageBox.Show("لا توجد مهام مسندة لك حالياً. يرجى مراجعة المدير لإضافة مهام.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            };
             btnUpdateStatus.Click += (s, e) => UpdateTaskStatus();
             btnAddNote.Click += (s, e) => AddNoteToTask();
             btnLogout.Click += (s, e) => { this.Close(); };
@@ -70,7 +77,7 @@ namespace TaskManagementSystem
         private void LoadTasks()
         {
             lvTasks.Items.Clear();
-            var tasks = _employeeService.GetMyTasks(_currentUser.EmployeeId);
+            var tasks = _employeeService.GetMyTasks(_currentUser.EmployeeId.Trim());
             foreach (var t in tasks)
             {
                 var item = new ListViewItem(t.Id.ToString());

@@ -92,12 +92,17 @@ namespace TaskManagementSystem.Data
         public void SaveEmployees() { File.WriteAllText(EmployeesFile, JsonSerializer.Serialize(_employees, new JsonSerializerOptions { WriteIndented = true })); }
         public void SaveTasks() { File.WriteAllText(TasksFile, JsonSerializer.Serialize(_tasks, new JsonSerializerOptions { WriteIndented = true })); }
 
-        public Employee? Login(string employeeId, string password) => _employees.FirstOrDefault(e => e.EmployeeId == employeeId && e.Password == password);
+        public Employee? Login(string employeeId, string password)
+        {
+            var normalizedEmployeeId = employeeId.Trim();
+            return _employees.FirstOrDefault(e => e.EmployeeId.Trim() == normalizedEmployeeId && e.Password == password);
+        }
 
         public bool CreateAccount(string name, string password, string department, string employeeId, string email)
         {
-            if (_employees.Any(e => e.EmployeeId == employeeId)) return false;
-            _employees.Add(new Employee { EmployeeId = employeeId, Name = name, Password = password, Department = department, IsManager = false, Email = email });
+            var normalizedEmployeeId = employeeId.Trim();
+            if (_employees.Any(e => e.EmployeeId.Trim() == normalizedEmployeeId)) return false;
+            _employees.Add(new Employee { EmployeeId = normalizedEmployeeId, Name = name.Trim(), Password = password, Department = department.Trim(), IsManager = false, Email = email.Trim() });
             SaveEmployees();
             return true;
         }
@@ -114,7 +119,11 @@ namespace TaskManagementSystem.Data
             return query.ToList();
         }
 
-        public List<TaskItem> GetEmployeeTasks(string employeeId) => _tasks.Where(t => t.EmployeeId == employeeId).ToList();
+        public List<TaskItem> GetEmployeeTasks(string employeeId)
+        {
+            var normalizedEmployeeId = employeeId.Trim();
+            return _tasks.Where(t => t.EmployeeId.Trim() == normalizedEmployeeId).ToList();
+        }
         public TaskItem? GetTaskById(int taskId) => _tasks.FirstOrDefault(t => t.Id == taskId);
 
         public bool AddTask(TaskItem task)
