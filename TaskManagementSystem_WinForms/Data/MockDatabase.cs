@@ -83,7 +83,13 @@ namespace TaskManagementSystem.Data
         }
 
         public List<TaskItem> GetEmployeeTasks(string employeeNumber, int employeeId)
-            => _tasks.Where(t => t.EmployeeNumber == employeeNumber).OrderByDescending(t => t.CreatedDate).ToList();
+        {
+            var normalizedEmployeeNumber = employeeNumber?.Trim() ?? string.Empty;
+            return _tasks
+                .Where(t => string.Equals(t.EmployeeNumber?.Trim(), normalizedEmployeeNumber, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(t => t.CreatedDate)
+                .ToList();
+        }
         public TaskItem? GetTaskById(int taskId) => _tasks.FirstOrDefault(t => t.Id == taskId);
         public List<TaskNote> GetTaskNotes(int taskId) => _notes.Where(n => n.TaskId == taskId).OrderBy(n => n.CreatedAt).ToList();
 
