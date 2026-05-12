@@ -94,7 +94,7 @@ namespace TaskManagementSystem.Data
             return true;
         }
         public bool DeleteTask(int taskId) { var task = GetTaskById(taskId); if (task == null) return false; _tasks.Remove(task); _notes.RemoveAll(n => n.TaskId == taskId); SaveTasks(); SaveNotes(); return true; }
-        public bool UpdateTaskStatus(int taskId, TaskStatus status) { var task = GetTaskById(taskId); if (task == null) return false; task.Status = status; SaveTasks(); return true; }
+        public bool UpdateTaskStatus(int taskId, TaskManagementSystem.Models.TaskStatus status) { var task = GetTaskById(taskId); if (task == null) return false; task.Status = status; SaveTasks(); return true; }
         public bool AddTaskNote(int taskId, string employeeNumber, string note) { _notes.Add(new TaskNote { Id = _notes.Count > 0 ? _notes.Max(n => n.Id) + 1 : 1, TaskId = taskId, EmployeeNumber = employeeNumber, NoteText = note.Trim(), CreatedAt = DateTime.Now }); SaveNotes(); return true; }
     }
 }
