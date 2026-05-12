@@ -10,12 +10,12 @@ namespace TaskManagementSystem.Services
         public List<TaskItem> GetMyTasks(string employeeNumber) => _db.GetEmployeeTasks(employeeNumber);
         public List<TaskNote> GetTaskNotes(int taskId) => _db.GetTaskNotes(taskId);
 
-        public bool UpdateTaskStatus(int taskId, TaskStatus newStatus)
+        public bool UpdateTaskStatus(int taskId, TaskManagementSystem.Models.TaskStatus newStatus)
         {
             var task = _db.GetTaskById(taskId);
             if (task == null) return false;
-            var valid = (task.Status == TaskStatus.NotStarted && newStatus == TaskStatus.InProgress)
-                        || (task.Status == TaskStatus.InProgress && newStatus == TaskStatus.Completed)
+            var valid = (task.Status == TaskManagementSystem.Models.TaskStatus.NotStarted && newStatus == TaskManagementSystem.Models.TaskStatus.InProgress)
+                        || (task.Status == TaskManagementSystem.Models.TaskStatus.InProgress && newStatus == TaskManagementSystem.Models.TaskStatus.Completed)
                         || task.Status == newStatus;
             return valid && _db.UpdateTaskStatus(taskId, newStatus);
         }
