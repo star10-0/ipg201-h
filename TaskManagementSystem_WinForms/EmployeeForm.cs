@@ -59,8 +59,10 @@ namespace TaskManagementSystem
                 Name = "txtNote",
                 Top = 45,
                 Left = 600,
-                Width = 560,
-                Height = 26
+                Width = 480,
+                Height = 60,
+                Multiline = true,
+                ScrollBars = ScrollBars.Vertical
             };
 
             _grid = new DataGridView
@@ -91,7 +93,7 @@ namespace TaskManagementSystem
 
         private void BindEmployeeData()
         {
-            _employeeInfoLabel.Text = $"الاسم: {_user.EmployeeName} | رقم الموظف: {_user.EmployeeNumber} | القسم: {_user.Department} | Employee ID: {_user.Id}";
+            _employeeInfoLabel.Text = $"الاسم: {_user.EmployeeName} | رقم الموظف: {_user.EmployeeNumber} | القسم: {_user.Department}";
         }
 
         private void BtnRefresh_Click(object? sender, EventArgs e) => LoadTasks();
@@ -115,24 +117,18 @@ namespace TaskManagementSystem
                 var rows = tasks.Select(t => new
                 {
                     TaskID = t.Id,
-                    TaskTitle = t.Title,
-                    Description = t.Description,
-                    Priority = ToArabicPriority(t.Priority),
-                    Status = ToArabicStatus(t.Status),
-                    CreationDate = t.CreatedDate,
-                    DeliveryDate = t.DueDate,
-                    Notes = string.Join(" | ", _service.GetTaskNotes(t.Id).Select(n => n.NoteText))
+                    عنوان_المهمة = t.Title,
+                    الوصف = t.Description,
+                    الأولوية = ToArabicPriority(t.Priority),
+                    الحالة = ToArabicStatus(t.Status),
+                    تاريخ_الإنشاء = t.CreatedDate.ToString("yyyy-MM-dd"),
+                    تاريخ_التسليم = t.DueDate.ToString("yyyy-MM-dd"),
+                    الملاحظات = string.Join(" | ", _service.GetTaskNotes(t.Id).Select(n => n.NoteText))
                 }).ToList();
 
                 _grid.DataSource = rows;
                 _grid.Columns["TaskID"].Visible = false;
-                _grid.Columns["TaskTitle"].HeaderText = "عنوان المهمة";
-                _grid.Columns["Description"].HeaderText = "الوصف";
-                _grid.Columns["Priority"].HeaderText = "الأولوية";
-                _grid.Columns["Status"].HeaderText = "الحالة";
-                _grid.Columns["CreationDate"].HeaderText = "تاريخ الإنشاء";
-                _grid.Columns["DeliveryDate"].HeaderText = "تاريخ التسليم";
-                _grid.Columns["Notes"].HeaderText = "الملاحظات";
+                
                 _grid.Refresh();
             }
             catch (Exception ex)
