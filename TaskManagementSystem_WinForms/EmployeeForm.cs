@@ -1,6 +1,7 @@
 using TaskManagementSystem.Data;
 using TaskManagementSystem.Models;
 using TaskManagementSystem.Services;
+using TaskStatusModel = TaskManagementSystem.Models.TaskStatus;
 
 namespace TaskManagementSystem
 {
@@ -30,8 +31,8 @@ namespace TaskManagementSystem
         {
             if (_grid.CurrentRow == null) return;
             var id = (int)_grid.CurrentRow.Cells["Id"].Value;
-            var current = Enum.Parse<TaskStatus>(_grid.CurrentRow.Cells["Status"].Value.ToString()!);
-            TaskStatus target = current == TaskStatus.NotStarted ? TaskStatus.InProgress : current == TaskStatus.InProgress ? TaskStatus.Completed : current;
+            var current = Enum.Parse<TaskStatusModel>(_grid.CurrentRow.Cells["Status"].Value.ToString()!);
+            TaskStatusModel target = current == TaskStatusModel.NotStarted ? TaskStatusModel.InProgress : current == TaskStatusModel.InProgress ? TaskStatusModel.Completed : current;
             if (!_service.UpdateTaskStatus(id, target)) { MessageBox.Show("Invalid status transition."); return; }
             LoadTasks();
         }
